@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const BoltS3Client_1 = require("./BoltS3Client");
 const { S3Client } = require("@aws-sdk/client-s3");
 const client_s3_1 = require("@aws-sdk/client-s3");
-process.env.BOLT_URL = "bolt.us-east-2.projectn.us-east-2.bolt.projectn.co";
+process.env.BOLT_URL = "https://bolt.us-east-2.projectn.us-east-2.bolt.projectn.co";
 const boltS3Client = new BoltS3Client_1.BoltS3Client();
 const s3Client = new S3Client();
 const command = new client_s3_1.ListBucketsCommand({});

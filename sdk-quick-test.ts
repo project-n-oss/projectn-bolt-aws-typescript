@@ -4,7 +4,7 @@ const { S3Client } = require("@aws-sdk/client-s3");
 
 import { ListBucketsCommand } from "@aws-sdk/client-s3";
 
-process.env.BOLT_URL = "bolt.us-east-2.projectn.us-east-2.bolt.projectn.co";
+process.env.BOLT_URL = "https://bolt.us-east-2.projectn.us-east-2.bolt.projectn.co";
 
 const boltS3Client = new BoltS3Client();
 const s3Client = new S3Client();

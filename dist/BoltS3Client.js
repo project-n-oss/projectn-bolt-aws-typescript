@@ -19,34 +19,45 @@ const aws4 = require("./aws4");
 // (async function () {
 //     defaultCredentials = await fromIni({ profile: "default" })();
 // })();
+function isValidUrl(strUrl) {
+    try {
+        new URL(strUrl);
+    }
+    catch (e) {
+        return false;
+    }
+    return true;
+}
+function getUrlHostname(strUrl) {
+    return new URL(strUrl).hostname;
+}
 class BoltS3Client extends S3Client {
     constructor(configuration = {}) {
         super(configuration);
-        this.IsMiddlwareStackUpdated = false;
-        this.savedCredentials = configuration.credentials;
+        this.region = configuration.region;
+        this.credentials = configuration.credentials;
         this.IsMiddlwareStackUpdated = false;
     }
-    // TODO: Add type definitions
+    // TODO: (MP) Add type definitions
     send(...args) {
         const _super = Object.create(null, {
             send: { get: () => super.send }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.savedCredentials) {
-                this.savedCredentials = yield fromIni({ profile: "default" })();
+            if (!this.credentials) {
+                this.credentials = yield fromIni({ profile: "default" })();
             }
-            const credentials = this.savedCredentials;
-            if (!credentials)
+            if (!this.credentials)
                 return new Error("AWS credentials are required!");
             if (!this.IsMiddlwareStackUpdated) {
-                this.UpdateMiddlewareStack(credentials);
+                this.UpdateMiddlewareStack();
             }
             return _super.send.call(this, ...args);
         });
     }
-    UpdateMiddlewareStack(credentials) {
+    UpdateMiddlewareStack() {
         this.middlewareStack.add((next, context) => (args) => {
-            const regionName = "us-east-1";
+            const regionName = this.region || "us-east-1";
             const serviceName = "sts";
             const stsUrlHostname = "sts.amazonaws.com";
             const options = {
@@ -56,11 +67,15 @@ class BoltS3Client extends S3Client {
                 service: serviceName,
                 region: regionName,
             };
-            aws4.sign(options, credentials);
+            aws4.sign(options, this.credentials);
             const boltURL = process.env.BOLT_URL; // TODO: This should be generic, needs to be updated for browser (works for node js for now)
-            if (!boltURL)
-                new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
-            args.request.hostname = boltURL;
+            if (!boltURL) {
+                return new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
+            }
+            if (!isValidUrl(boltURL)) {
+                return new Error("Bolt URL is not valid. Please verify");
+            }
+            args.request.hostname = getUrlHostname(boltURL);
             const signedHeaders = options["headers"] || {};
             args.request.headers = {};
             args.request.headers["X-Amz-Date"] = signedHeaders["X-Amz-Date"];
