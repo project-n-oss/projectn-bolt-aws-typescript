@@ -4,11 +4,9 @@
   "description": "The official Project N Bolt TypeScript client library",
   "main": "BoltS3Client.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc && node dist/sdk-quick-test.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\"",
-    "onlydev": "./node_modules/nodemon/bin/nodemon.js -e ts",
-    "tsc": "tsc"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Project N",
   "license": "ISC",
