@@ -39,7 +39,10 @@ export BOLT_URL="<url>"
 export AWS_REGION='<region>'
 ```
 
-<!-- ## Debugging
+
+<!-- TODO: (MP) -->
+
+<!-- ## Debugging 
 
 Import the default logger and set its level to DEBUG
 
