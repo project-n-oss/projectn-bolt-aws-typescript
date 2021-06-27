@@ -13,6 +13,7 @@ exports.BoltS3Client = void 0;
 const { S3Client } = require("@aws-sdk/client-s3");
 const { fromIni } = require("@aws-sdk/credential-provider-ini");
 const aws4 = require("./aws4");
+const axios = require("axios");
 /*
     Async default credentials are going to be loaded from file system into send method (when called for first time)
 */
@@ -31,10 +32,50 @@ function isValidUrl(strUrl) {
 function getUrlHostname(strUrl) {
     return new URL(strUrl).hostname;
 }
+function getBoltHostname() {
+    const boltURL = process.env.BOLT_URL;
+    if (!boltURL) {
+        throw new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
+    }
+    if (!isValidUrl(boltURL)) {
+        throw new Error("Bolt URL is not valid. Please verify");
+    }
+    return getUrlHostname(boltURL);
+}
+/**
+ * To get the region from EC2 instance in which Bolt is running
+ * Every EC2 instance has associated metadata, which AWS makes available to all users & applications inside the instance. The instance ID, region and so are part of the metadata.
+ */
+function getBoltRegion() {
+    return __awaiter(this, void 0, void 0, function* () {
+        /*
+          Fetching info from AWS (SDK) metadata service is not efficient in terms of bundle size since that NPM package minification itself morethan 6.5 MB, so here we're going with other well known approach
+        */
+        // const response = await new Promise(function (fulfilled, rejected) {
+        //   new AWS.MetadataService().request("region", (error, data) =>
+        //     fulfilled(data)
+        //   );
+        // });
+        if (process.env.AWS_REGION) {
+            return process.env.AWS_REGION;
+        }
+        try {
+            const response = yield axios.get("http://169.254.169.254/latest/dynamic/instance-identity/document");
+            if (response.data && response.data.region) {
+                return response.data.region;
+            }
+            else {
+                return new Error("Error in fetching Bolt's region.");
+            }
+        }
+        catch (err) {
+            return new Error(err);
+        }
+    });
+}
 class BoltS3Client extends S3Client {
     constructor(configuration = {}) {
         super(configuration);
-        this.region = configuration.region;
         this.credentials = configuration.credentials;
         this.IsMiddlwareStackUpdated = false;
     }
@@ -50,14 +91,16 @@ class BoltS3Client extends S3Client {
             if (!this.credentials)
                 return new Error("AWS credentials are required!");
             if (!this.IsMiddlwareStackUpdated) {
+                this.region = yield getBoltRegion();
+                this.hostname = getBoltHostname();
                 this.UpdateMiddlewareStack();
+                this.IsMiddlwareStackUpdated = true;
             }
             return _super.send.call(this, ...args);
         });
     }
     UpdateMiddlewareStack() {
         this.middlewareStack.add((next, context) => (args) => {
-            const regionName = this.region || "us-east-1";
             const serviceName = "sts";
             const stsUrlHostname = "sts.amazonaws.com";
             const options = {
@@ -65,17 +108,10 @@ class BoltS3Client extends S3Client {
                 host: stsUrlHostname,
                 body: "Action=GetCallerIdentity&Version=2011-06-15",
                 service: serviceName,
-                region: regionName,
+                region: this.region,
             };
             aws4.sign(options, this.credentials);
-            const boltURL = process.env.BOLT_URL; // TODO: This should be generic, needs to be updated for browser (works for node js for now)
-            if (!boltURL) {
-                return new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
-            }
-            if (!isValidUrl(boltURL)) {
-                return new Error("Bolt URL is not valid. Please verify");
-            }
-            args.request.hostname = getUrlHostname(boltURL);
+            args.request.hostname = this.hostname;
             const signedHeaders = options["headers"] || {};
             args.request.headers = {};
             args.request.headers["X-Amz-Date"] = signedHeaders["X-Amz-Date"];
@@ -84,7 +120,6 @@ class BoltS3Client extends S3Client {
         }, {
             step: "finalizeRequest",
         });
-        this.IsMiddlwareStackUpdated = true;
     }
 }
 exports.BoltS3Client = BoltS3Client;
