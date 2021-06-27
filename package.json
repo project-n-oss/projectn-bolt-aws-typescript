@@ -1,10 +1,13 @@
 {
   "name": "projectn-bolt-aws-typescript-sdk",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.2",
   "description": "The official Project N Bolt TypeScript client library",
-  "main": "BoltS3Client.js",
+  "main": "dist/BoltS3Client.js",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
-    "compile": "tsc && node dist/sdk-quick-test.js",
+    "compile": "tsc",
     "dev": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
