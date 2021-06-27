@@ -1,4 +1,4 @@
-var aws4 = exports, url = require('url'), querystring = require('querystring'), lru = require('./lru'), credentialsCache = lru(1000);
+var aws4 = exports, url = require('url'), querystring = require('querystring'), lru = require('./lru'), credentialsCache = lru(50);
 const { createHmac, createHash } = require('crypto');
 // http://docs.amazonwebservices.com/general/latest/gr/signature-version-4.html
 function hmac(key, string, encoding = undefined) {
