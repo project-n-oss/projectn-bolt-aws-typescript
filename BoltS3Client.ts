@@ -115,6 +115,9 @@ export class BoltS3Client extends S3Client {
         args.request.headers["Authorization"] = signedHeaders[
           "Authorization"
         ].replace("content-length;content-type;", "");
+        if(this.credentials.sessionToken) {
+          args.request.headers["X-Amz-Security-Token"] = this.credentials.sessionToken;
+        }
         return next(args);
       },
       {
