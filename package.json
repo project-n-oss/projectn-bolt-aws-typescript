@@ -1,6 +1,6 @@
 {
   "name": "projectn-bolt-aws-typescript-sdk",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "The official Project N Bolt TypeScript client library",
   "main": "dist/BoltS3Client.js",
   "files": [
@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.18.0",
+    "aws-sdk": "^2.936.0",
     "axios": "^0.21.1"
   },
   "devDependencies": {
