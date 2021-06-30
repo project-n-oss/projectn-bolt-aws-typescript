@@ -79,6 +79,7 @@ function getBoltRegion() {
 }
 class BoltS3Client extends S3Client {
     constructor(configuration = {}) {
+        configuration.forcePathStyle = true;
         super(configuration);
         this.credentials = configuration.credentials;
         this.IsMiddlwareStackUpdated = false;

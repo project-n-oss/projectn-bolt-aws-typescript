@@ -1,6 +1,6 @@
 {
   "name": "projectn-bolt-aws-typescript-sdk",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "The official Project N Bolt TypeScript client library",
   "main": "dist/BoltS3Client.js",
   "files": [
