@@ -2,7 +2,7 @@ import { S3Client as S3ClientType, S3ClientConfig } from "@aws-sdk/client-s3";
 
 const { S3Client } = require("@aws-sdk/client-s3");
 
-const { fromIni } = require("@aws-sdk/credential-provider-ini");
+import AWS from 'aws-sdk/global';
 
 const aws4 = require("./aws4");
 
@@ -83,7 +83,8 @@ export class BoltS3Client extends S3Client {
   // TODO: (MP) Add type definitions
   async send(...args) {
     if (!this.credentials) {
-      this.credentials = await fromIni({ profile: "default" })();
+      const chain = new AWS.CredentialProviderChain();
+      this.credentials = await chain.resolvePromise();
     }
     if (!this.credentials) return new Error("AWS credentials are required!");
     if (!this.IsMiddlwareStackUpdated) {

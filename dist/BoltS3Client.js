@@ -8,10 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BoltS3Client = void 0;
 const { S3Client } = require("@aws-sdk/client-s3");
-const { fromIni } = require("@aws-sdk/credential-provider-ini");
+const global_1 = __importDefault(require("aws-sdk/global"));
 const aws4 = require("./aws4");
 const axios = require("axios");
 /*
@@ -86,7 +89,8 @@ class BoltS3Client extends S3Client {
         });
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.credentials) {
-                this.credentials = yield fromIni({ profile: "default" })();
+                const chain = new global_1.default.CredentialProviderChain();
+                this.credentials = yield chain.resolvePromise();
             }
             if (!this.credentials)
                 return new Error("AWS credentials are required!");
