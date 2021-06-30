@@ -35,11 +35,12 @@ function isValidUrl(strUrl) {
 function getUrlHostname(strUrl) {
     return new URL(strUrl).hostname;
 }
-function getBoltHostname() {
-    const boltURL = process.env.BOLT_URL;
+function getBoltHostname(region) {
+    let boltURL = process.env.BOLT_URL;
     if (!boltURL) {
         throw new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
     }
+    boltURL = boltURL.replace(new RegExp('{region}', 'g'), region);
     if (!isValidUrl(boltURL)) {
         throw new Error("Bolt URL is not valid. Please verify");
     }
@@ -96,7 +97,7 @@ class BoltS3Client extends S3Client {
                 return new Error("AWS credentials are required!");
             if (!this.IsMiddlwareStackUpdated) {
                 this.region = yield getBoltRegion();
-                this.hostname = getBoltHostname();
+                this.hostname = getBoltHostname(this.region);
                 this.UpdateMiddlewareStack();
                 this.IsMiddlwareStackUpdated = true;
             }
