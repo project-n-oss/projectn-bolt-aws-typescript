@@ -98,13 +98,13 @@ class BoltS3Client extends S3Client {
             if (!this.IsMiddlwareStackUpdated) {
                 this.region = yield getBoltRegion();
                 this.hostname = getBoltHostname(this.region);
-                this.UpdateMiddlewareStack();
+                this.updateMiddlewareStack();
                 this.IsMiddlwareStackUpdated = true;
             }
             return _super.send.call(this, ...args);
         });
     }
-    UpdateMiddlewareStack() {
+    updateMiddlewareStack() {
         this.middlewareStack.add((next, context) => (args) => {
             const serviceName = "sts";
             const stsUrlHostname = "sts.amazonaws.com";
