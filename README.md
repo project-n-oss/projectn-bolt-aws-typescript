@@ -7,6 +7,7 @@ The package affects the signing and routing protocol of the AWS S3 client, there
 
 <!-- ## Prerequisites
 
+
 ## Installation -->
 
 ## Configuration
@@ -40,7 +41,7 @@ export AWS_REGION='<region>'
 ```
 
 
-<!-- TODO: (MP) ---- -->
+<!-- TODO: (MP) -->
 
 <!-- ## Debugging 
 
