@@ -8,6 +8,14 @@ const aws4 = require("./aws4");
 
 const axios = require("axios");
 
+/**
+ * AWS4 protocol signer for Bolt.
+ * Rather than directly signing S3 requests, we instead use credentials sent into the S3 request,
+ * but proxy the signature to a canonical STS GetCallerIdentity API call.
+ */
+ const SIGNING_VERIFICATION_REGION = "us-east-1";
+ /* 
+
 /*  
     Async default credentials are going to be loaded from file system into send method (when called for first time)
 */
@@ -108,7 +116,7 @@ export class BoltS3Client extends S3Client {
           host: stsUrlHostname,
           body: "Action=GetCallerIdentity&Version=2011-06-15",
           service: serviceName,
-          region: this.region,
+          region: SIGNING_VERIFICATION_REGION,
         };
         aws4.sign(options, this.credentials);
         args.request.hostname = this.hostname;
