@@ -26,7 +26,7 @@ const SIGNING_VERIFICATION_REGION = "us-east-1";
 /*
 
 /*
-   Async default credentials are going to be loaded from file system into send method (when called for first time)
+    Async default credentials are going to be loaded from file system into send method (when called for first time)
 */
 // (async function () {
 //     defaultCredentials = await fromIni({ profile: "default" })();
@@ -48,7 +48,7 @@ function getBoltHostname(region) {
     if (!boltURL) {
         throw new Error("Bolt URL could not be found.\nPlease expose env var BOLT_URL");
     }
-    boltURL = boltURL.replace(new RegExp('{region}', 'g'), region);
+    boltURL = boltURL.replace(new RegExp("{region}", "g"), region);
     if (!isValidUrl(boltURL)) {
         throw new Error("Bolt URL is not valid. Please verify");
     }
@@ -92,7 +92,6 @@ class BoltS3Client extends S3Client {
         this.credentials = configuration.credentials;
         this.IsMiddlwareStackUpdated = false;
     }
-    // TODO: (MP) Add type definitions
     send(...args) {
         const _super = Object.create(null, {
             send: { get: () => super.send }
@@ -131,7 +130,8 @@ class BoltS3Client extends S3Client {
             args.request.headers["X-Amz-Date"] = signedHeaders["X-Amz-Date"];
             args.request.headers["Authorization"] = signedHeaders["Authorization"].replace("content-length;content-type;", "");
             if (this.credentials.sessionToken) {
-                args.request.headers["X-Amz-Security-Token"] = this.credentials.sessionToken;
+                args.request.headers["X-Amz-Security-Token"] =
+                    this.credentials.sessionToken;
             }
             return next(args);
         }, {

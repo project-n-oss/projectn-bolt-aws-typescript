@@ -5,10 +5,31 @@ This SDK provides an authentication solution for programatically interacting wit
 
 The package affects the signing and routing protocol of the AWS S3 client, therefore any non S3 clients created through this SDK will be un-affected by the wrapper.
 
-<!-- ## Prerequisites
+## Install the SDK
 
+```shell
+npm i projectn-bolt-aws-typescript-sdk
+```
 
-## Installation -->
+## Using Typescript SDK for Bolt
+
+Import the SDK into your project:
+
+```shell
+import { BoltS3Client } from "projectn-bolt-aws-typescript-sdk";
+```
+
+## Set up  Bolt Client
+
+Replace the following in your application:
+```shell
+const client = new S3Client({});
+```
+
+with
+```shell
+const client = new BoltS3Client({});
+```
 
 ## Configuration
 
@@ -39,12 +60,3 @@ export BOLT_URL="<url>"
 ```bash
 export AWS_REGION='<region>'
 ```
-
-
-<!-- TODO: (MP) -->
-
-<!-- ## Debugging 
-
-Import the default logger and set its level to DEBUG
-
-`logging.getLogger().setLevel(logging.DEBUG)` -->

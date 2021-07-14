@@ -1,8 +1,8 @@
-import { S3Client as S3ClientType, S3ClientConfig } from "@aws-sdk/client-s3";
+import { S3ClientConfig } from "@aws-sdk/client-s3";
 
 const { S3Client } = require("@aws-sdk/client-s3");
 
-import AWS from 'aws-sdk/global';
+import AWS from "aws-sdk/global";
 
 const aws4 = require("./aws4");
 
@@ -13,8 +13,8 @@ const axios = require("axios");
  * Rather than directly signing S3 requests, we instead use credentials sent into the S3 request,
  * but proxy the signature to a canonical STS GetCallerIdentity API call.
  */
- const SIGNING_VERIFICATION_REGION = "us-east-1";
- /* 
+const SIGNING_VERIFICATION_REGION = "us-east-1";
+/* 
 
 /*  
     Async default credentials are going to be loaded from file system into send method (when called for first time)
@@ -43,7 +43,7 @@ function getBoltHostname(region: string) {
       "Bolt URL could not be found.\nPlease expose env var BOLT_URL"
     );
   }
-  boltURL = boltURL.replace(new RegExp('{region}', 'g'), region);
+  boltURL = boltURL.replace(new RegExp("{region}", "g"), region);
   if (!isValidUrl(boltURL)) {
     throw new Error("Bolt URL is not valid. Please verify");
   }
@@ -90,7 +90,6 @@ export class BoltS3Client extends S3Client {
     this.IsMiddlwareStackUpdated = false;
   }
 
-  // TODO: (MP) Add type definitions
   async send(...args) {
     if (!this.credentials) {
       const chain = new AWS.CredentialProviderChain();
@@ -126,8 +125,9 @@ export class BoltS3Client extends S3Client {
         args.request.headers["Authorization"] = signedHeaders[
           "Authorization"
         ].replace("content-length;content-type;", "");
-        if(this.credentials.sessionToken) {
-          args.request.headers["X-Amz-Security-Token"] = this.credentials.sessionToken;
+        if (this.credentials.sessionToken) {
+          args.request.headers["X-Amz-Security-Token"] =
+            this.credentials.sessionToken;
         }
         return next(args);
       },
